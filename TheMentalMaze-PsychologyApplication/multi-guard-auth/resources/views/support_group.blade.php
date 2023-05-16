@@ -22,6 +22,10 @@
     #ask_section {
       display: none;
     }
+    
+    #update_form {
+      display: none;
+    }
   
     #see_users {
       display: none;
@@ -113,8 +117,8 @@
                       <li class="nav-item">
                         <!-- for admin view -->
                         @auth('helper')
-                        <a href="#" class="nav-link link-dark">
-                          <span class="lead">All Members</span>
+                        <a href="#" class="nav-link link-dark" onclick="view_update_form()">
+                          <span class="lead">Update Group Info</span>
                         </a>
                         @else
                         <a href="#" class="nav-link link-dark" onclick="view_profile()">
@@ -124,8 +128,7 @@
                       </li>
                       @foreach ($all_users as $user)
                       <li class="nav-item">
-                        <a href="#" class="content nav-link link-dark" aria-current="page" id="{{$user->name}}"
-                          onclick="toggleActive('content')">
+                        <a href="#" class="content nav-link link-dark" aria-current="page" id="{{$user->name}}">
                           {{ $user->name }}
                         </a>
                       </li>
@@ -169,10 +172,12 @@
                   <h2>Group Description</h2>
                   <p>{{$data->description}}</p>
                   <br>
-                  <h2>Some Relevant Resources for dealing with {{$data->category}}</h2>
-                  <!-- @auth('helper')
-                      <button class="btn-secondary">Update</button>
-                      @endauth -->
+                  @auth('helper')
+                  <form action="{{ url('delete-group') }}" method="POST">
+                    @csrf
+                    <button class="btn-primary" type="submit">Delete Group</button>
+                  </form>
+                  @endauth
                 </div>
                 <!-- END (GROUP INFO) -->
                 
@@ -302,6 +307,33 @@
                 </div>
                 <!-- END (ASK QUESTION) -->
                 
+                <!-- UPDATE FORM -->
+                <div id="update_form">
+                  <br>
+                  <h1>Update Group Data</h1>
+                  <br>
+                  <br>
+                  <h2>Add the new data !!</h2>
+                  <br>
+                  <br>
+                  <form action="{{ url('update-group-data') }}" method="POST">
+                    @csrf
+                    <!-- <input class="form-control" type="hidden" name="name" id="name"> -->
+                    <label style="color: white;" for="name">Group Name : </label>
+                    <input class="form-control" type="text" name="name" id="name">
+                    <br>
+                    <label style="color: white;" for="description">Description : </label>
+                    <br>
+                    <textarea class="form-control" type="text" name="description" id="description"></textarea>
+                    <br>
+                    <label style="color: white;" for="image">Group Image : </label>
+                    <input class="form-control" type="file" id="image" name="image">
+                    <br>
+                    <button type="submit" class="btn-secondary">Submit</button>
+                  </form>
+                </div>
+                <!-- END (UPDATE FORM) -->
+                
                 </div>
                 <script>
 
@@ -309,12 +341,14 @@
                   var ask_section = document.getElementById('ask_section');
                   var see_users = document.getElementById('see_users');
                   var profile = document.getElementById('profile');
+                  var update_form = document.getElementById('update_form');
 
                   function view_group_info() {
                     group_info.style.display = "block";
                     profile.style.display = "none";
                     ask_section.style.display = "none";
                     see_users.style.display = "none";
+                    update_form.style.display = "none";
                   }
 
                   function view_profile() {
@@ -322,6 +356,7 @@
                     ask_section.style.display = "none";
                     see_users.style.display = "none";
                     group_info.style.display = "none";
+                    update_form.style.display = "none";
                   }
 
                   function view_ask_section() {
@@ -329,7 +364,17 @@
                     see_users.style.display = "none";
                     profile.style.display = "none";
                     group_info.style.display = "none";
+                    update_form.style.display = "none";
                   }
+                  
+                  function view_update_form() {
+                    update_form.style.display = "block";
+                    ask_section.style.display = "none";
+                    see_users.style.display = "none";
+                    profile.style.display = "none";
+                    group_info.style.display = "none";
+                  }
+
                 </script>
             </div>
         </div>
