@@ -19,6 +19,7 @@ use App\Http\Controllers\ResourceInsertController;
 use App\Http\Controllers\GroupsAndResourceViewController;
 use App\Http\Controllers\QuestionareController;
 use App\Http\Controllers\GroupDataInsertController;
+use App\Http\Controllers\GroupDataUpdateController;
 use App\Http\Controllers\CheckGroupsController;
 use App\Http\Controllers\PostQuestionController;
 use App\Http\Controllers\PostAnswerController;
@@ -36,6 +37,10 @@ Route::post('resources',[ResourceInsertController::class,'store']);
 
 // store data for Support Groups from the helper
 Route::post('data-for-supportgroups',[GroupDataInsertController::class,'store'])->middleware('auth:helper');
+
+// update data for Support Groups by the helper
+Route::post('update-group-data',[GroupDataUpdateController::class,'update'])->middleware('auth:helper');
+Route::post('delete-group',[GroupDataUpdateController::class,'delete'])->middleware('auth:helper');
 
 // view relevant resources
 Route::get('/profile',[GroupsAndResourceViewController::class,'index'])->middleware('auth');
