@@ -48,6 +48,7 @@ Route::get('/profile',[GroupsAndResourceViewController::class,'index'])->middlew
 // store answers from the user
 Route::get('stored',[QuestionareController::class,'index'])->middleware('auth');
 Route::post('store-answers',[QuestionareController::class,'store'])->middleware('auth');
+Route::post('remove-answers',[QuestionareController::class,'remove'])->middleware('auth');
 
 // support groups
 Route::get('/support-group/{name}', [CheckGroupsController::class, 'show'])->middleware('auth')->name('show');
@@ -56,8 +57,9 @@ Route::get('/support-group/admin-view/{name}', [CheckGroupsController::class, 's
 // store questions from the user in group
 Route::post('store-question',[PostQuestionController::class,'store'])->middleware('auth');
 
-// store answers from the user in group
-Route::post('store-answer',[PostAnswerController::class,'store'])->middleware('auth');
+// store answers from the members and admin in group
+Route::post('store-answer-admin',[PostAnswerController::class,'store'])->middleware('auth:helper');
+Route::post('store-answer-user',[PostAnswerController::class,'store'])->middleware('auth');
 
 
 Auth::routes();
