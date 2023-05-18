@@ -25,7 +25,6 @@
 
     <!-- Scripts -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-    <link href="assets/css/style.css" rel="stylesheet">
 
     <style> 
     .body{
@@ -34,15 +33,13 @@
     .head{
         margin: 20px;
     }
-    #groups{
+    #groups, #resources, #remove, #add{
         display: none;
     }
     .body .card{
         margin: 10px
     }
-    #resources{
-        display: none;
-    }
+
     /* Style for the sidebar */
     #sidebar {
         position: fixed;
@@ -240,38 +237,128 @@
               </div>
             </div>
         </section>
+        <footer id="footer" style="color: #37517e;">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-6 text-left">
+                        <button class="btn btn-secondary" onclick = "view_remove_form()">Remove Category</button>
+                    </div>
+                    <div class="col-md-6 text-right">
+                        <button class="btn btn-secondary" onclick = "view_add_form()">Add Category</button>
+                    </div>
+                </div>
+            </div>
+        </footer>
     </div>
     <!-- MAIN END -->
 
-    <!-- Support Groups -->
-    <div id="groups" class="content container-lg">
-        <h1 class="display-4"><i>Some Relevant Support Groups</i></h1>
+    <!-- REMOVE INFO -->
+    <div id="remove" class="content container-lg">
+        <h1 class="head"><i>Remove Your personal information if you want</i></h1>
         <br>
-        <br>
-        <div class="body d-flex flex-wrap">
-        @foreach ($groups_info as $group_info)    
-        <div class="card" style="width: 18rem;">
-            <div class="card-body">
-                <h5 class="card-title" id="Group_name" >{{ $group_info->name }}</h5>
-                <p class="card-text">{{ $group_info->description }}</p>
-                <a href="{{ url('/support-group', ['name' => $group_info->name]) }}" class="btn btn-primary">Open</a>
+        <form class="form card-body" method="post" action="{{url('remove-answers')}}">
+            @csrf
+            <label style="color: white;" for="category">Relevant Problem : </label>
+            <select class="form-control" name="category" id="category">
+                <option value="Anxiety">Anxiety</option>
+                <option value="Gender Dysphoria">Gender Dysphoria</option>
+                <option value="Mood Disorder">Mood Disorders</option>
+                <option value="Personality Disorder">Personality Disorder</option>
+                <option value="Eating Disorder">Eating Disorder</option>
+                <option value="Psychotic Disorder">Psychotic Disorder</option>
+                <option value="Sleep Disorder">Sleep Disorder</option>
+                <option value="Neurodevelopmental Disorder">Neurodevelopmental Disorder</option>
+                <option value="Trauma">Trauma</option>
+                <option value="Substance-related Disorder">Substance-related Disorder</option>
+            </select>                    
+            <br>
+            <button type="submit" class="btn btn-primary">
+                {{ __('Submit') }}
+            </button>
+        </form>
+        <br><br>
+        <div class="container-fluid">
+            <div class="row text-center">
+                <button class="btn btn-secondary" onclick = "view_add_form()">Switch to Add Category</button>
             </div>
         </div>
-        @endforeach
+    </div>
+    <!-- REMOVE INFO END-->
+    
+    <!-- ADD INFO -->
+    <div id="add" class="content container-lg">
+        <h1 class="head"><i>Add further personal information if you want</i></h1>
+        <br>
+        <form class="form card-body" method="post" action="{{url('store-answers')}}">
+            @csrf
+            <label style="color: white;" for="category">Relevant Problem : </label>
+            <select class="form-control" name="category" id="category">
+                <option value="Anxiety">Anxiety</option>
+                <option value="Gender Dysphoria">Gender Dysphoria</option>
+                <option value="Mood Disorder">Mood Disorders</option>
+                <option value="Personality Disorder">Personality Disorder</option>
+                <option value="Eating Disorder">Eating Disorder</option>
+                <option value="Psychotic Disorder">Psychotic Disorder</option>
+                <option value="Sleep Disorder">Sleep Disorder</option>
+                <option value="Neurodevelopmental Disorder">Neurodevelopmental Disorder</option>
+                <option value="Trauma">Trauma</option>
+                <option value="Substance-related Disorder">Substance-related Disorder</option>
+            </select>                    
+            <br>
+            <label style="color: white;" for="level">On a scale of 1-10, how severe would you rate your current mental health concern?</label>
+            <br>
+            <input class="form-control" type="number" name="level" value="{{ old('level') }}" required autocomplete="level" min="1" max="10"></input>
+            <br>
+            <button type="submit" class="btn btn-primary">
+                {{ __('Submit') }}
+            </button>
+        </form>
+        <br><br>
+        <div class="container-fluid">
+            <div class="row text-center">
+                <button class="btn btn-secondary" onclick = "view_remove_form()">Switch to Remove Category</button>
+            </div>
         </div>
     </div>
+    <!-- ADD INFO END-->
+
+    <!-- Support Groups -->
+    <div id="groups" class="content container-lg">
+        <h1 class="head"><i>Some Relevant Support Groups</i></h1>
+        <br>
+        <br>
+        @foreach ($category as $group_category)
+        <br>
+        <h1 class="display-4"><i>{{ $group_category->category }}</i></h1>
+        <br>
+        <div class="body d-flex flex-wrap">
+            @foreach ($groups_info as $group_info)
+            @if($group_category->category == $group_info->category)
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title" id="Group_name" >{{ $group_info->name }}</h5>
+                    <p class="card-text">{{ $group_info->description }}</p>
+                    <a href="{{ url('/support-group', ['name' => $group_info->name]) }}" class="btn btn-primary">Open</a>
+                </div>
+            </div>
+            @endif
+            @endforeach
+        </div>
+        @endforeach
+    </div>
+    
     <!-- Support Groups END -->
 
     <!-- RESOURCES -->
     <div id="resources" class="content container-lg">
-        <h1 class="display-4"><i>Some Relevant Helping Material</i></h1>
+        <h1 class="head"><i>Some Relevant Helping Material</i></h1>
         <br>
         <br>
         <div class="body d-flex flex-wrap">
         @foreach ($resources as $resources)
         <div class="card" style="width: 18rem;">
             <div class="card-body">
-              <h5 class="card-title">Helping Material</h5>
+              <h5 class="card-title">Helping Material for {{$resources->category}}</h5>
               <a href="{{ $resources->resource }}" class="btn btn-primary">Watch!!</a>
             </div>
         </div>
@@ -297,6 +384,8 @@
             var main = document.getElementById("main");
             var groups = document.getElementById("groups");
             var resources = document.getElementById("resources");
+            var remove = document.getElementById("remove");
+            var add = document.getElementById("add");
 
             var clickedCard = event.target.closest(".card");
             if (clickedCard.id === "support-groups") 
@@ -304,19 +393,41 @@
                 groups.style.display = "block";
                 resources.style.display = "none";
                 main.style.display = "none";   
+                remove.style.display = "none";
+                add.style.display = "none";
             } 
             else if (clickedCard.id === "helping-material") {
                 resources.style.display = "block";
                 groups.style.display = "none";
                 main.style.display = "none";
+                remove.style.display = "none";
+                add.style.display = "none";
             }
             else
             {
                 main.style.display = "block";
                 resources.style.display = "none";
-                groups.style.display = "none";   
+                groups.style.display = "none";
+                remove.style.display = "none";  
+                add.style.display = "none"; 
             }
             toggleActive(clickedCard);
+        }
+
+        function view_remove_form(){
+            remove.style.display = "block";
+            add.style.display = "none";
+            main.style.display = "none";
+            resources.style.display = "none";
+            groups.style.display = "none";
+        }
+        
+        function view_add_form(){
+            add.style.display = "block";
+            remove.style.display = "none";
+            main.style.display = "none";
+            resources.style.display = "none";
+            groups.style.display = "none";
         }
     
         // Attach event listeners to sidebar cards
