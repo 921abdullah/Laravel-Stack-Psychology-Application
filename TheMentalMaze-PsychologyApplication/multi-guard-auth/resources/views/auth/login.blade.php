@@ -5,7 +5,7 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header">{{ $title ?? "" }} {{ __('Login') }}</div>
+                <div class="card-header">{{ __('Login Here') }}</div>
             <div class="card-body">
                 @isset($url)
                     <form method="POST" action="{{ $url }}">
@@ -70,6 +70,13 @@
                     </form>
                 </div>
             </div>
+            <br>
+            @isset($url)
+            <h3 style="color:white;"> 
+            <a href="{{ url('/helper/register') }}">
+            Switch to register
+            </a></h3>
+            @endisset
         </div>
     </div>
 </div>
