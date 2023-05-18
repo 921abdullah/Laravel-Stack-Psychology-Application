@@ -98,6 +98,11 @@
     font-size: 20px;
   }
 
+  .active{
+    color: blue;
+    font-size: 25px;
+  }
+
   </style>
 </head>
 <body style="background-color: #37517e;">
@@ -108,7 +113,7 @@
                     <a href="#" onclick="view_group_info()" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
                     <svg class="bi me-2" width="40" height="32"><use xlink:href="#bootstrap"></use></svg>
                     @foreach ($data as $data)    
-                    <span class="fs-4">{{$data->group_name}}</span>
+                    <span id="nav-group" class="active">{{$data->group_name}}</span>
                     @endforeach
                     </a>
                     <hr>
@@ -118,11 +123,11 @@
                         <!-- for admin view -->
                         @auth('helper')
                         <a href="#" class="nav-link link-dark" onclick="view_update_form()">
-                          <span class="lead">Update Group Info</span>
+                          <span id="nav-update" class="lead">Update Group Info</span>
                         </a>
                         @else
                         <a href="#" class="nav-link link-dark" onclick="view_profile()">
-                          <span class="lead">My Profile</span>
+                          <span id="nav-profile" class="lead">My Profile</span>
                         </a>
                         @endauth
                       </li>
@@ -133,12 +138,6 @@
                         </a>
                       </li>
                       @endforeach
-                      <li class="nav-item">
-                        <a href="#" class="nav-link active" aria-current="page">
-                          <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"></use></svg>
-                          Insert element
-                        </a>
-                      </li>
                     </ul>
                     <hr>
                     <div class="dropdown">
@@ -177,6 +176,24 @@
                     @csrf
                     <button class="btn-primary" type="submit">Delete Group</button>
                   </form>
+                  <br>
+                  <button class="btn-secondary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-return-left" viewBox="0 0 16 16">
+                      <path fill-rule="evenodd" d="M14.5 1.5a.5.5 0 0 1 .5.5v4.8a2.5 2.5 0 0 1-2.5 2.5H2.707l3.347 3.346a.5.5 0 0 1-.708.708l-4.2-4.2a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 8.3H12.5A1.5 1.5 0 0 0 14 6.8V2a.5.5 0 0 1 .5-.5z"/>
+                    </svg>
+                    <a href="{{url('/helper/dashboard')}}" style="text-decoration:none; color:white">
+                    Dashboard
+                    </a>
+                  </button>
+                  @else
+                  <button class="btn-secondary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-return-left" viewBox="0 0 16 16">
+                      <path fill-rule="evenodd" d="M14.5 1.5a.5.5 0 0 1 .5.5v4.8a2.5 2.5 0 0 1-2.5 2.5H2.707l3.347 3.346a.5.5 0 0 1-.708.708l-4.2-4.2a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 8.3H12.5A1.5 1.5 0 0 0 14 6.8V2a.5.5 0 0 1 .5-.5z"/>
+                    </svg>
+                    <a href="{{url('/profile')}}" style="text-decoration:none; color:white">
+                    User Profile
+                    </a>
+                  </button>
                   @endauth
                 </div>
                 <!-- END (GROUP INFO) -->
@@ -225,8 +242,9 @@
                   <script>
                     var ask_section = document.getElementById('ask_section');
                     var see_users = document.getElementById('see_users');
-                    var profile = document.getElementById('profile');
                     var group_info = document.getElementById('group_info');
+                    // var profile = document.getElementById('profile');
+                    // var update_form = document.getElementById('update_form');
 
                     // to display username in it 
                     // var UserName = document.getElementById('UserName');
@@ -236,15 +254,21 @@
                     content.forEach((content) => {
                       content.addEventListener("click", (e) => {
                         see_users.style.display = "block";
-                        profile.style.display = "none";
                         ask_section.style.display = "none";
                         group_info.style.display = "none";
+                        @auth('helper')
+                        document.getElementById('update_form').style.display = "none";
+                        document.getElementById('nav-update').className = "lead";
+                        @else
+                        document.getElementById('profile').style.display = "none";
+                        document.getElementById('nav-profile').className = "lead";
+                        @endauth
                         document.getElementById('display').innerHTML = '';
                       });
                     });
-
                     @foreach($ques as $ques)
                     @if ($ques -> name == Auth:: user() -> name)
+                    // SKIP AS ITS THE CURRENT USER
                     @else
                     var name = '{{$ques->name}}'
                     var clickedElement = document.getElementById(name);
@@ -263,13 +287,17 @@
                             @endif
                             @endforeach
                             <br>
-                            <form action="{{ url("store-answer") }}" method="POST">
+                            @auth("helper")
+                            <form action="{{ url("store-answer-admin") }}" method="POST">
+                            @else
+                            <form action="{{ url("store-answer-user") }}" method="POST">
+                            @endauth
                             @csrf
-                            <input type="hidden" name="question_id" value="{{$ques->id}}">
-                            <input type="hidden" name="group_name" value="{{$data->group_name}}">
+                            <input type="hidden" name="question_id" value="{{$ques->id}}" required>
+                            <input type="hidden" name="group_name" value="{{$data->group_name}}" required>
                             <label for="answer">Your Answer Here</label>
                             <br>
-                            <textarea class="form-control" name="answer" rows="3"></textarea>
+                            <textarea class="form-control" name="answer" rows="3" required></textarea>
                             <br>
                             <button type="submit">Submit</button>
                             </form>
@@ -300,10 +328,17 @@
                     @csrf
                     <input type="hidden" name="group_name" value="{{$data->group_name}}">
                     <label for="question"><p>Ask your question here</p></label>
-                    <textarea class="form-control" name="question" required autocomplete="question"></textarea>
+                    <textarea class="form-control" name="question" required autocomplete="question" required></textarea>
                     <br>
                     <button class="btn-primary" type="submit">Post</button>
                   </form>
+                  <br>
+                  <button class="btn-primary" onclick="view_profile()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-return-left" viewBox="0 0 16 16">
+                      <path fill-rule="evenodd" d="M14.5 1.5a.5.5 0 0 1 .5.5v4.8a2.5 2.5 0 0 1-2.5 2.5H2.707l3.347 3.346a.5.5 0 0 1-.708.708l-4.2-4.2a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 8.3H12.5A1.5 1.5 0 0 0 14 6.8V2a.5.5 0 0 1 .5-.5z"/>
+                    </svg>
+                    Back
+                  </button>
                 </div>
                 <!-- END (ASK QUESTION) -->
                 
@@ -320,14 +355,14 @@
                     @csrf
                     <!-- <input class="form-control" type="hidden" name="name" id="name"> -->
                     <label style="color: white;" for="name">Group Name : </label>
-                    <input class="form-control" type="text" name="name" id="name">
+                    <input class="form-control" type="text" name="name" id="name" required>
                     <br>
                     <label style="color: white;" for="description">Description : </label>
                     <br>
-                    <textarea class="form-control" type="text" name="description" id="description"></textarea>
+                    <textarea class="form-control" type="text" name="description" id="description" required></textarea>
                     <br>
                     <label style="color: white;" for="image">Group Image : </label>
-                    <input class="form-control" type="file" id="image" name="image">
+                    <input class="form-control" type="file" id="image" name="image" required>
                     <br>
                     <button type="submit" class="btn-secondary">Submit</button>
                   </form>
@@ -336,12 +371,14 @@
                 
                 </div>
                 <script>
-
                   var group_info = document.getElementById('group_info');
                   var ask_section = document.getElementById('ask_section');
                   var see_users = document.getElementById('see_users');
                   var profile = document.getElementById('profile');
                   var update_form = document.getElementById('update_form');
+                  var nav_group = document.getElementById('nav-group');
+                  // var nav_profile = document.getElementById('nav-profile');
+                  // var nav_update = document.getElementById('nav-update');
 
                   function view_group_info() {
                     group_info.style.display = "block";
@@ -349,6 +386,12 @@
                     ask_section.style.display = "none";
                     see_users.style.display = "none";
                     update_form.style.display = "none";
+                    nav_group.className = " active";
+                    @auth('helper')
+                    document.getElementById('nav-update').className = "lead";
+                    @else
+                    document.getElementById('nav-profile').className = "lead";
+                    @endauth
                   }
 
                   function view_profile() {
@@ -357,6 +400,8 @@
                     see_users.style.display = "none";
                     group_info.style.display = "none";
                     update_form.style.display = "none";
+                    nav_group.className = "fs-4";
+                    document.getElementById('nav-profile').className = "active";
                   }
 
                   function view_ask_section() {
@@ -373,6 +418,8 @@
                     see_users.style.display = "none";
                     profile.style.display = "none";
                     group_info.style.display = "none";
+                    nav_group.className = "fs-4";
+                    document.getElementById('nav-update').className = "active";
                   }
 
                 </script>
